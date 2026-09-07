@@ -1,0 +1,31 @@
+using System;
+
+namespace ChatbotSqlApi.Models
+{
+    public class ApiResponse<T>
+    {
+        public bool Success { get; set; }
+        public string Message { get; set; }
+        public T Data { get; set; }
+
+        public static ApiResponse<T> Ok(T data, string message = "Query executed successfully.")
+        {
+            return new ApiResponse<T>
+            {
+                Success = true,
+                Message = message,
+                Data = data
+            };
+        }
+
+        public static ApiResponse<T> Fail(string message, T data = default(T))
+        {
+            return new ApiResponse<T>
+            {
+                Success = false,
+                Message = message,
+                Data = data
+            };
+        }
+    }
+}

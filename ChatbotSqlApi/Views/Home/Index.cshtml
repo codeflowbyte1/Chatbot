@@ -1,0 +1,63 @@
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot SQL API Test Console</title>
+    <link href="~/Content/Site.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div class="container">
+        <h1>Chatbot SQL API Test Page</h1>
+        <p class="subtitle">Execute SQL queries against the backend C# Web API endpoint (<code>/api/chatbot/query</code>).</p>
+
+        <div class="form-group">
+            <label for="sqlQuery">SQL Query</label>
+            <textarea id="sqlQuery" placeholder="SELECT COUNT(*) AS TotalOrders FROM Orders">SELECT COUNT(*) AS TotalOrders FROM Orders</textarea>
+        </div>
+
+        <button id="btnExecute" onclick="executeQuery()">[ Execute Query ]</button>
+
+        <div class="result-container">
+            <label for="jsonResponse">API Response</label>
+            <pre id="jsonResponse">// API Response will appear here...</pre>
+        </div>
+    </div>
+
+    <script>
+        function executeQuery() {
+            var queryText = document.getElementById("sqlQuery").value;
+            var responseArea = document.getElementById("jsonResponse");
+            var btn = document.getElementById("btnExecute");
+
+            responseArea.textContent = "Executing query...";
+            btn.disabled = true;
+
+            fetch("/api/chatbot/query", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ query: queryText })
+            })
+            .then(function(res) {
+                return res.json().then(function(data) {
+                    return { status: res.status, body: data };
+                });
+            })
+            .then(function(result) {
+                responseArea.textContent = JSON.stringify(result.body, null, 4);
+                btn.disabled = false;
+            })
+            .catch(function(err) {
+                responseArea.textContent = "Error communicating with server: " + err.message;
+                btn.disabled = false;
+            });
+        }
+    </script>
+</body>
+</html>
